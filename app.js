@@ -6,8 +6,12 @@ const express = require("express");
 const path = require("path");
 const mustacheExpress = require("mustache-express");
 
+// appelle db
+const db = require("./config/db.js");
+
 //au debut d fichier
 dotenv.config();
+
 
 /* const server = http.createServer((request, response) =>{
     //response.end('test server');
@@ -20,7 +24,7 @@ dotenv.config();
     }else{        
         const file = fs.readFileSync('./public/404.html','utf-8');
         response.setHeader('Content-Type','text/html');
-        response.statusCode = 404;
+        response.statusCode = 404:
         response.end(file);
     }
 }) */
@@ -89,6 +93,34 @@ server.get("/donnees/:id",(req, res)=>{
 server.get('/html',(req,res)=>{
     res.send('<h1>Hello, this is an HTML response!</h1>')
 })
+
+/** COnfig et Test DB FIREBASE */
+
+server.get("/plantes", async (req, res) => {
+    const donneesRef = await db.collection("plantes").get(); // .orderBy("nom","dsec"). : limit 2
+
+    console.log(req.query);
+    const direction = req.query["order-direction"];
+    const limit = req.query["limit"]
+
+    const donneesFinale = [];
+
+    donneesRef.forEach((doc)=>{
+        donneesFinale.push(doc.data())
+    });
+    res.statusCode = 200;
+    res.json(donneesFinale)
+
+   });
+
+
+   // filter
+   //server.get('',async(req, res)=>{
+
+   //})
+
+
+/** END */
 
 
 // gestion d une requete non trouvée (redirect vers 404)
